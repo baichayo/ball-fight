@@ -33,10 +33,9 @@ class AcGameMenu {
         let outer = this;
 
         this.$single_mode.click(function(){
-            confirm("你想进行单人模式吗");
+            //confirm("你想进行单人模式吗");
             outer.hide();
             outer.root.playground.show();
-            console.log("hhh");
         });
 
         this.$multi_mode.click(function(){
@@ -55,46 +54,4 @@ class AcGameMenu {
     hide(){//关闭menu界面
         this.$menu.hide();
     }  
-}
-class AcGamePlayground {
-    constructor(root){
-        this.root = root;
-        this.$playground = $(`
-        <div>游戏界面</div>
-`);
-        
-        this.hide();
-        this.root.$ac_game.append(this.$playground);
-
-        this.start();
-    }
-    
-    start(){
-    
-    }
-
-    update(){
-
-    }
-
-    show(){//打开playground界面
-        this.$playground.show();
-    }
-
-    hide(){//关闭playground界面
-        this.$playground.hide();
-    }
-}
-class AcGame {
-    constructor(id){
-        this.id = id;
-        this.$ac_game = $('#' + id);
-
-        this.menu = new AcGameMenu(this);
-        this.playground = new AcGamePlayground(this);
-    }
-
-    start(){
-
-    }
 }

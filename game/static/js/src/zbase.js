@@ -1,5 +1,13 @@
 class AcGame {
     constructor(id){
-        alert("不要点进来");
+        this.id = id;
+        this.$ac_game = $('#' + id);
+
+        this.menu = new AcGameMenu(this);
+        this.playground = new AcGamePlayground(this);
+    }
+
+    start(){
+
     }
 }
