@@ -11,12 +11,12 @@ class AcGameMenu {
             多人模式
         </div></br>
         <div class="ac-game-menu-field-item ac-game-menu-field-item-settings-mode">
-            设置
+            退出账号
         </div></br>
     </div>
 </div>
 `);
-
+        this.hide();
         this.root.$ac_game.append(this.$menu);
         this.$single_mode = this.$menu.find('.ac-game-menu-field-item-single-mode');
         this.$multi_mode = this.$menu.find('.ac-game-menu-field-item-multi-mode');
@@ -39,11 +39,12 @@ class AcGameMenu {
         });
 
         this.$multi_mode.click(function(){
-            confirm("你想进行多人模式吗");
+            confirm("嘟嘟嘟，还在努力开发中...");
         });
 
         this.$settings.click(function(){
-            confirm("打开设置");
+            //confirm("打开设置");
+            outer.root.settings.logout_on_remote();
         });
     }
 

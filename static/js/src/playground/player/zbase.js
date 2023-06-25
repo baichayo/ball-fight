@@ -24,10 +24,14 @@ class Player extends AcGameObject {
         this.last_fireball_time = 0;//上次开火时间 ms
         this.is_alive = true;//是否存活
         this.cur_skill = null;
+
+        this.img = new Image();
+        this.img.src = "";
     }
 
     start(){
         if(this.is_me){
+            this.img.src = this.playground.root.settings.photo;
             this.add_listening_events();
         } else{
             let tx = Math.random() * this.playground.width;
@@ -111,16 +115,16 @@ class Player extends AcGameObject {
         this.damage_speed = damage * 100;
 
         this.speed *= 1.7;//球体越小速度越高
-        
+
         //烟花
         for(let i = 0; i < 10 + Math.random() * 5; i++){
             let x = this.x, y = this.y;
-            let radius = this.radius * Math.random() * 0.1;
+            let radius = this.radius * Math.random() * 0.2;
             let angle = Math.PI * 2 * Math.random();
             let vx = Math.cos(angle), vy = Math.sin(angle);
             let color = this.color;
-            let speed = this.speed * 10;
-            let move_length = this.radius * Math.random() * 10;
+            let speed = this.speed * 15;
+            let move_length = this.radius * Math.random() * 20;
             new Particle(this.playground, x, y, radius, vx, vy, color, speed, move_length);
         }
         if(this.radius < 10){
@@ -133,7 +137,7 @@ class Player extends AcGameObject {
         //AI自主射击
         if(!this.is_me && (this.spend_time += this.timedelta/1000) > 3 && Math.random() < 1 / 60.0 / 3){//五秒射击一次
             let player = this.playground.players[0];
-            
+
             let tx = player.x + this.vx * player.speed * this.timedelta / 1000 * 1;
             let ty = player.y + this.vy * player.speed * this.timedelta / 1000 * 1;
 
@@ -182,13 +186,34 @@ class Player extends AcGameObject {
                 this.playground.players.splice(i, 1);
             }
         }
+        
+        if(this.is_me){
+            confirm("You Lose???菜狗一个");
+            location.reload();
+        }
+        else if(this.playground.players.length == 1){
+            if(this.playground.players[0].is_me) {
+                confirm("You Win!!!奖励一个捏捏");
+                location.reload();
+            }
+        }
     }
 
     render(){
-        this.ctx.beginPath();
-        this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
-        this.ctx.fillStyle = this.color;
-        this.ctx.fill();
+        if(this.is_me){
+            this.ctx.save();
+            this.ctx.beginPath();
+            this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+            this.ctx.stroke();
+            this.ctx.clip();
+            this.ctx.drawImage(this.img, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2); 
+            this.ctx.restore();
+        } else{
+
+            this.ctx.beginPath();
+            this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+            this.ctx.fillStyle = this.color;
+            this.ctx.fill();}
     }
 
 }
