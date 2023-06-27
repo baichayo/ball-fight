@@ -109,9 +109,13 @@ class Settings {
     }
 
     start(){
-        if(this.root.AcWingOS) this.platform = "ACAPP";
-        this.getinfo();
-        this.add_listening_events();
+        if(this.root.AcWingOS){
+            this.platform = "ACAPP";
+            this.getinfo_acapp();
+        } else {
+            this.getinfo_web();
+            this.add_listening_events();
+        }
     }
 
     register(){//打开注册界面
@@ -125,7 +129,22 @@ class Settings {
         this.$login.show();
     }
 
-    getinfo(){
+    //y总逻辑: acapp端一定是未登录状态
+    //看代码逻辑：好像用户一点击安装/打开应用就代表默认授权AcWing账号
+    getinfo_acapp(){
+        let outer = this;
+        $.ajax({
+            url: "https://app5638.acapp.acwing.com.cn/settings/acwing/acapp/apply_code/",
+            type: "GET",
+            success: function(resp){
+                if(resp.result === "success"){
+                    outer.acapp_login(resp.appid, resp.redirect_uri, resp.scope, resp.state);
+                }
+            }
+        });
+    }
+
+    getinfo_web(){
         let outer = this;
         $.ajax({
             url: "https://app5638.acapp.acwing.com.cn/settings/getinfo/",
@@ -149,7 +168,7 @@ class Settings {
                     //setTimeout(outer.register(), 7000);
                 }
             }
-        })
+        });
     }
 
     add_listening_events(){
@@ -211,7 +230,7 @@ class Settings {
 
     acwing_login(){//acwing一键登录
         $.ajax({
-            url: "https://app5638.acapp.acwing.com.cn/settings/acwing/web/apply_code/",
+            url: "https://app5638.acapp.acwing.com.cn/settings/acwing/acapp/apply_code",
             type: "GET",
             success: function(resp){
                 //console.log("acwing_login:", resp);
@@ -219,6 +238,20 @@ class Settings {
                 if(resp.result === "success"){
                     window.location.replace(resp.apply_code_url);//重定向
                 }
+            }
+        });
+    }
+
+    acapp_login(appid, redirect_uri, scope, state){//acapp一键登录
+        let outer = this;
+
+        this.root.AcWingOS.api.oauth2.authorize(appid, redirect_uri, scope, state, function(resp){
+            console.log("acapp_login: ", resp);
+            if(resp.result === "success"){
+                outer.username = resp.username;
+                outer.photo = resp.photo;
+                outer.hide();
+                outer.root.menu.show();
             }
         });
     }

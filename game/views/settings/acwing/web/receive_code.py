@@ -17,7 +17,8 @@ def receive_code(request):
         return redirect("index")
 
     cache.delete(state)# 验证成功就删掉state
-
+    
+    # 进行第二步
     apply_access_token_url = "https://www.acwing.com/third_party/api/oauth2/access_token/"
     params = {
         'appid': "5638",
@@ -35,7 +36,8 @@ def receive_code(request):
     if players.exists(): # 如果该用户已存在，则无需重新获取信息，直接登录即可
         login(request, players[0].user) # 疑问，一个openid竟然会有多名用户？
         return redirect("index")
-
+    
+    # 进行第三步
     get_userinfo_url = "https://www.acwing.com/third_party/api/meta/identity/getinfo/"
     params = {
         'access_token': access_token,
