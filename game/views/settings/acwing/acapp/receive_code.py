@@ -38,7 +38,7 @@ def receive_code(request):
             }
 
     access_token_res = requests.get(access_token_url, params=params).json()
-    acess_token = access_token_res['access_token']
+    access_token = access_token_res['access_token']
     openid = access_token_res['openid']
 
     players = Player.objects.filter(openid=openid)
@@ -62,14 +62,14 @@ def receive_code(request):
     username = getinfo_res['username']
     photo = getinfo_res['photo']
 
-    while User.objects.filiter(username=username).exists():
+    while User.objects.filter(username=username).exists():
         username += str(randint(0, 9))
 
     user = User.objects.create(username=username)
     player = Player.objects.create(user=user, photo=photo, openid=openid)
     # login(request, user)
 
-    return JsonRespose({
+    return JsonResponse({
         'result': "success",
         'username': player.user.username,
         'photo': player.photo

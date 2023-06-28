@@ -230,7 +230,7 @@ class Settings {
 
     acwing_login(){//acwing一键登录
         $.ajax({
-            url: "https://app5638.acapp.acwing.com.cn/settings/acwing/acapp/apply_code",
+            url: "https://app5638.acapp.acwing.com.cn/settings/acwing/web/apply_code",
             type: "GET",
             success: function(resp){
                 //console.log("acwing_login:", resp);
