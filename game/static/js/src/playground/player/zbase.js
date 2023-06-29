@@ -1,5 +1,5 @@
 class Player extends AcGameObject {
-    constructor(playground, x, y, radius, color, speed, is_me){ // radius = 0.05 speed=0.15
+    constructor(playground, x, y, radius, color, speed, role, username, photo){ // radius = 0.05 speed=0.15
         super();
         this.playground = playground;
         this.ctx = this.playground.game_map.ctx;
@@ -11,7 +11,9 @@ class Player extends AcGameObject {
         this.radius = radius;
         this.color = color;
         this.speed = speed;
-        this.is_me = is_me;
+        this.role = role;
+        this.username = username;
+        this.photo = photo;
         this.eps = 0.01; //scale 的 1%
 
         //受伤害之后的速度
@@ -30,10 +32,11 @@ class Player extends AcGameObject {
     }
 
     start(){
-        if(this.is_me){
-            this.img.src = this.playground.root.settings.photo;
-            this.add_listening_events();
+        if(this.role !== "robot"){
+            this.img.src = this.photo;
+            if(this.role === "me") this.add_listening_events();
         } else{
+            console.log("robot spawn");
             let tx = Math.random() * this.playground.width / this.playground.scale;
             let ty = Math.random() * this.playground.height / this.playground.scale;
             this.move_to(tx, ty);
@@ -41,6 +44,7 @@ class Player extends AcGameObject {
     }
 
     add_listening_events(){
+        console.log("start listening events...");
         let outer = this;//class的this
 
         this.playground.game_map.$canvas.on("contextmenu", function(){
@@ -141,7 +145,7 @@ class Player extends AcGameObject {
     }
 
     update_AI_shoot(){ //AI自主射击
-        if(!this.is_me && (this.spend_time += this.timedelta/1000) > 3 && Math.random() < 1 / 60.0 / 3){//五秒射击一次
+        if(this.role === "robot" && (this.spend_time += this.timedelta/1000) > 3 && Math.random() < 1 / 60.0 / 3){//五秒射击一次
             let player = this.playground.players[0];
 
             let tx = player.x + this.vx * player.speed * this.timedelta / 1000 * 1;
@@ -152,7 +156,7 @@ class Player extends AcGameObject {
     }
 
     update_move(){
-        if(this.damage_speed > 10 / this.playground.scale){//受到伤害
+        if(this.damage_speed > 50 / this.playground.scale){//受到伤害
             //取消玩家操作
             this.vx = this.vy = 0;
             this.move_length = 0;
@@ -162,12 +166,12 @@ class Player extends AcGameObject {
             this.y += this.damage_y * this.damage_speed * this.timedelta / 1000;
             this.damage_speed *= this.friction;
             //console.log(this.damage_speed);
-        } else {
-            if(this.move_length < this.eps){
+        } else {//没受到伤害，正常移动
+            if(this.move_length < this.eps){//移动完毕
                 this.move_length = 0;
                 this.vx = this.vy = 0;
 
-                if(!this.is_me){
+                if(this.role === "robot"){//判断条件存疑 机器人移动完毕继续移动
                     let tx = Math.random() * this.playground.width / this.playground.scale;
                     let ty = Math.random() * this.playground.height / this.playground.scale;
                     this.move_to(tx, ty);
@@ -193,12 +197,12 @@ class Player extends AcGameObject {
             }
         }
         
-        if(this.is_me){
+        if(this.role === "me"){
             confirm("You Lose???菜狗一个");
             location.reload();
         }
         else if(this.playground.players.length == 1){
-            if(this.playground.players[0].is_me) {
+            if(this.playground.players[0].role === "me") {
                 confirm("You Win!!!奖励一个捏捏");
                 location.reload();
             }
@@ -207,13 +211,13 @@ class Player extends AcGameObject {
 
     render(){
         let scale = this.playground.scale;
-        if(this.is_me){
+        if(this.role === "me"){
             this.ctx.save();
             this.ctx.beginPath();
             this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
             this.ctx.stroke();
             this.ctx.clip();
-            this.ctx.drawImage(this.img, (this.x - this.radius) * scale, (this.y - this.radius) * scale, this.radius * 2 * scale, this.radius * 2 * scale); 
+            this.ctx.drawImage(this.img, (this.x - this.radius) * scale, (this.y - this.radius) * scale, this.radius * 2 * scale, this.radius * 2 * scale);
             this.ctx.restore();
         } else{
 

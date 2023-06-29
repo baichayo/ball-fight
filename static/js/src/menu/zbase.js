@@ -35,11 +35,13 @@ class AcGameMenu {
         this.$single_mode.click(function(){
             //confirm("你想进行单人模式吗");
             outer.hide();
-            outer.root.playground.show();
+            outer.root.playground.show("single mode");
         });
 
         this.$multi_mode.click(function(){
-            confirm("嘟嘟嘟，还在努力开发中...");
+            //confirm("嘟嘟嘟，还在努力开发中...");
+            outer.hide();
+            outer.root.playground.show("multi mode");
         });
 
         this.$settings.click(function(){
