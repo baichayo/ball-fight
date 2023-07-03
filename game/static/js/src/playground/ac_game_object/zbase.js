@@ -26,7 +26,6 @@ class AcGameObject{
             let x = parseInt(Math.floor(Math.random() * 10));
             res += x;
         }
-        console.log("create_uuid: ", res);
         return res;
     }
 

@@ -291,7 +291,10 @@ class Settings {
     }
 
     logout_on_remote(){//退出账号
-        if(this.platform === "ACAPP") return false;
+        if(this.platform === "ACAPP"){
+            this.root.AcWingOS.api.window.close();
+        }
+
 
         $.ajax({
             url: "https://app5638.acapp.acwing.com.cn/settings/logout/",

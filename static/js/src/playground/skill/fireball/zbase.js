@@ -27,21 +27,33 @@ class FireBall extends AcGameObject {
             this.destroy();
             return false;
         }
+
+        this.update_move();
+
+        if(this.player.role !== "enemy"){//多人模式下只检测自己的火球
+            this.update_attack();
+        }
+
+        this.render();
+    }
+
+    update_move(){
         //console.log("moving..");
         let moved = Math.min(this.move_length, this.speed * this.timedelta / 1000);
         this.x += this.vx * moved;
         this.y += this.vy * moved;
         this.move_length -= moved;
+    }
 
-        //检测碰撞
+    update_attack(){//检测碰撞
         for(let i = 0; i < this.playground.players.length; i++){
             let player = this.playground.players[i];
             if(this.player !== player && this.is_collision(player)){
                 this.attack(player);
+                break;
             }
         }
 
-        this.render();
     }
 
     get_dist(x1, y1, x2, y2){
@@ -56,11 +68,29 @@ class FireBall extends AcGameObject {
         return false;
     }
 
-    attack(player){
-        this.destroy();
-        
-        let angle = Math.atan2(player.y - this.y, player.x - this.x)
+    attack(player) {
+        let angle = Math.atan2(player.y - this.y, player.x - this.x);
         player.is_attacked(angle, this.damage);
+
+        if (this.playground.mode === "multi mode") {
+            this.playground.mps.send_attack(player.uuid, player.x, player.y, angle, this.damage, this.uuid);
+        }
+
+        this.destroy();
+    }
+
+    //fireball销毁顺序：达到销毁条件后，调用this.destroy()
+    //this.destroy()调用on_destroy()，将火球从play.fireballs中删除
+    //this.destroy()删除AcGameObject对象
+    //问题来了，player中的destroy_fireball()啥时候执行
+    on_destroy(){
+        let fireballs = this.player.fireballs;
+        for(let i = 0; i < fireballs.length; i++){
+            if(fireballs[i] === this){
+                fireballs.splice(i, 1);
+                break;
+            }
+        }
     }
 
     render(){

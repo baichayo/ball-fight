@@ -43,6 +43,12 @@ class AcGamePlayground {
         this.height = this.$playground.height();
 
         this.game_map = new GameMap(this);
+
+        this.mode = mode;
+        this.state = "waiting";
+        this.notice_board = new NoticeBoard(this);
+        this.player_count = 0;
+
         this.resize();
         //将球的大小全变成相对 scale 的百分比
         this.players = [];
